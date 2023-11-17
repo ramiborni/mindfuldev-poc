@@ -1,7 +1,9 @@
+import StressChart from "@/components/dashboard/chart.component";
+
 export default function Dashboard() {
     return (
-        <div>
-            <h1>Dashboard</h1>
+        <div className="grid grid-cols-1 gap-x-8">
+            <StressChart/>
         </div>
     )
 }
