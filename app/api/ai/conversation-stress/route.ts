@@ -6,6 +6,9 @@ export async function POST(request: Request){
     const openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY || ""
     });
+
+    const body = await request.json();
+
     const stressDetectResult = await openai.chat.completions.create(
         {
             messages: [
@@ -15,7 +18,7 @@ export async function POST(request: Request){
                 },
                 {
                     role: "user",
-                    content: JSON.stringify(await request.json())
+                    content: body.message
                 }
             ],
             model: "gpt-3.5-turbo-1106",
@@ -25,5 +28,9 @@ export async function POST(request: Request){
         }
     )
 
-    return NextResponse.json(JSON.parse(stressDetectResult.choices[0].message.content || ""));
+    const isStressed : boolean = JSON.parse(stressDetectResult.choices[0].message.content!).isStressed
+
+    return NextResponse.json({
+        isStressed
+    });
 }

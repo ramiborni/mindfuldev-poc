@@ -11,19 +11,42 @@ import {toast} from "sonner";
 import {useSearchParams} from "next/navigation";
 import {chatPrompt} from "@/app/api/chat/prompt";
 import rehypeHighlight from "rehype-highlight";
+import axios from "axios";
 
 
 export default function Page() {
     const formRef = useRef<HTMLFormElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const searchParams = useSearchParams()
-    const stressLevel = searchParams.get('stress')
+    const stressLevel = parseInt(searchParams.get('stress') || "0");
+
 
     const {messages, input, setInput, handleSubmit, isLoading} = useChat({
-        onResponse: (response) => {
+        onResponse: async (response) => {
             if (response.status === 429) {
                 toast.error("You have reached your request limit for the day.");
                 return;
+            }
+        },
+        onFinish: async () => {
+            const stressChecker = await axios.post(
+                "/api/ai/conversation-stress",
+                {
+                    message: input
+                }
+            )
+            const {isStressed} = stressChecker.data;
+
+            if (isStressed) {
+                const currentTimestamp = Math.floor(Date.now() / 1000)
+                const saveStressLog = await axios.post(
+                    "/api/users",
+                    {
+                        detectedByCodeStress: stressLevel > 50,
+                        detectedByTextStress: isStressed,
+                        detectedDate: currentTimestamp,
+                    }
+                )
             }
         },
         onError: (error) => {
@@ -31,20 +54,18 @@ export default function Page() {
         },
         initialMessages: [
             {
-              id: "0",
-              role: "system",
-              content: chatPrompt
+                id: "0",
+                role: "system",
+                content: chatPrompt
             },
             {
                 id: "1",
                 role: "assistant",
-                content: parseInt(stressLevel || "0") > 50 ? `Hi, I'm MindfulDev Assistant 😊. I'm here to help you out with your stress 😥, you may be suffering from anxiety at rate up to ${stressLevel}% according to our ai engine. You can tell me how are you feeling today?` :
+                content: stressLevel > 50 ? `Hi, I'm MindfulDev Assistant 😊. I'm here to help you out with your stress 😥, you may be suffering from anxiety at rate up to ${stressLevel}% according to our ai engine. You can tell me how are you feeling today?` :
                     "Hi, I'm MindfulDev Assistant 😊. I'm here to help you out with your stress, but i can help you with the coding too 💻 How can i help you today?\n You may tell me also how you feel today, and i will try to help you out with your stress?",
             }
         ]
     });
-
-
 
 
     const disabled = isLoading || input.length === 0;
@@ -53,7 +74,7 @@ export default function Page() {
     return (
         <main className="flex flex-col items-center justify-between pb-40">
             {messages.length > 0 ? (
-                messages.slice(1,messages.length).map((message, i) => (
+                messages.slice(1, messages.length).map((message, i) => (
                     <div
                         key={i}
                         className={clsx(

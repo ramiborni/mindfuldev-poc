@@ -1,12 +1,24 @@
 import {NextResponse} from "next/server";
-import User from "@/models/userModel";
+import User, {IStressLog} from "@/models/userModel";
 import {connect} from "@/dbConfig/dbConfig";
 
 connect();
 
 export async function POST(req: Request) {
-    return NextResponse.json({message: "Hello, world!"});
-
+    const body: IStressLog = await req.json();
+    const stressLog = await User.updateOne(
+        {
+            _id: "6557bbe9089c56339e172b05"
+        },
+        {
+            $push: {
+                stressLog: body
+            }
+        }
+    )
+    return NextResponse.json({
+        message: "Stress log added"
+    });
 }
 
 export async function GET(req: Request) {
