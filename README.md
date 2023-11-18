@@ -11,7 +11,6 @@ MindfulDev is an innovative AI-powered mental health tool designed explicitly fo
 ### Personalized Support and Insights
 - **AI-Powered Virtual Coach:** Offers personalized stress-relief exercises, empathetic support, and guidance based on individualized needs.
 - **Collaborative Well-Being Dashboard:** Provides insights into team communication sentiment and stress levels, promoting a supportive team culture.
-- 
 
 ### Stress-tracking chart
 - **Daily check:** Track your stress through a simplified chart daily
