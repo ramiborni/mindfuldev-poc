@@ -1,4 +1,4 @@
-# MindfulDev
+# MindfulDev - Made by ramiborni and masterbrain19
 
 MindfulDev is an innovative AI-powered mental health tool designed explicitly for developers, aiming to enhance their well-being and productivity in the demanding tech industry. By leveraging cutting-edge AI technology and tailored algorithms, MindfulDev focuses on proactive mental health care, stress mitigation, and fostering a supportive work environment.
 
